@@ -1,6 +1,10 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
+function Loader() {
+  return <div>En cours de chargement</div>;
+}
+
 interface Country {
   capital: Array<string>;
   flags: { png: string; alt: string };
@@ -31,11 +35,13 @@ async function fetchAllCountries(): Promise<Array<Country>> {
 
 export const Route = createFileRoute("/")({
   component: HomeComponent,
+  pendingComponent: Loader,
   loader: () => fetchAllCountries(),
 });
 
 function HomeComponent() {
   const countries = Route.useLoaderData();
+  console.log(countries);
 
   const regions = countries.reduce((acc, value) => {
     if (acc.has(value.region)) {
