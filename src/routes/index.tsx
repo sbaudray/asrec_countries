@@ -41,7 +41,6 @@ export const Route = createFileRoute("/")({
 
 function HomeComponent() {
   const countries = Route.useLoaderData();
-  console.log(countries);
 
   const regions = countries.reduce((acc, value) => {
     if (acc.has(value.region)) {
