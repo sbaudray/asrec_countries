@@ -57,7 +57,9 @@ function HomeComponent() {
 
     if (searchTerm.trim() !== "") {
       if (
-        !country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+        !country.translations.fra.common
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
       ) {
         keepItem = false;
       }
