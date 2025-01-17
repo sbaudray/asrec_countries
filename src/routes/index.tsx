@@ -2,8 +2,21 @@ import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
 interface Country {
-  flags: string;
+  capital: Array<string>;
+  flags: { png: string; alt: string };
   name: { common: string };
+  translations: {
+    fra: { common: string };
+  };
+  region: string;
+  languages: { [key: string]: string };
+  currencies: { [key: string]: { name: string; symbol: string } };
+  demonyms: {
+    fra: {
+      f: string;
+      m: string;
+    };
+  };
 }
 
 async function fetchAllCountries(): Promise<Array<Country>> {
@@ -39,7 +52,7 @@ function HomeComponent() {
   });
 
   return (
-    <div className="p-2">
+    <div>
       <h3>ASREC Countries</h3>
       <label htmlFor="search">Rechercher un pays:</label>
       <input
@@ -57,17 +70,49 @@ function HomeComponent() {
 function CountryList({ countries }: { countries: Country[] }) {
   return (
     <section>
-      {countries.map((country) => {
-        return <CountryItem country={country} />;
-      })}
+      <ul>
+        {countries.map((country) => {
+          return <CountryItem key={country.name.common} country={country} />;
+        })}
+      </ul>
     </section>
   );
 }
 
 function CountryItem({ country }: { country: Country }) {
   return (
-    <article>
-      <h1>{country.name.common}</h1>
-    </article>
+    <li>
+      <article>
+        <span>
+          <img src={country.flags.png} alt={country.flags.alt} width={32} />
+        </span>
+        <h1>{country.translations.fra.common}</h1>
+        <span>({country.name.common})</span>
+        <dl>
+          <dt>Capitale:</dt>
+          <dd>{country.capital[0] || "NA"}</dd>
+
+          <dt>Region:</dt>
+          <dd>{country.region}</dd>
+
+          <dt>Langues:</dt>
+          <dd>{Object.values(country.languages).join(", ") || "NA"}</dd>
+
+          <dt>Monnaie:</dt>
+          <dd>
+            {Object.values(country.currencies)
+              .map((currency) => {
+                return `${currency.name} (${currency.symbol})`;
+              })
+              .join(", ") || "NA"}
+          </dd>
+
+          <dt>Demonyms:</dt>
+          <dd>
+            {`F: ${country.demonyms.fra.f || "NA"} M: ${country.demonyms.fra.m || "NA"}`}
+          </dd>
+        </dl>
+      </article>
+    </li>
   );
 }
