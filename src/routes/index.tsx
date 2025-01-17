@@ -20,12 +20,36 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeComponent() {
-  const data = Route.useLoaderData();
-  console.log(data);
+  const countries = Route.useLoaderData();
+
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const filteredCountries = countries.filter((country) => {
+    let keepItem = true;
+
+    if (searchTerm.trim() !== "") {
+      if (
+        !country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
+        keepItem = false;
+      }
+    }
+
+    return keepItem;
+  });
+
   return (
     <div className="p-2">
       <h3>ASREC Countries</h3>
-      <CountryList countries={data} />
+      <label htmlFor="search">Rechercher un pays:</label>
+      <input
+        id="search"
+        name="search"
+        role="search"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.currentTarget.value)}
+      />
+      <CountryList countries={filteredCountries} />
     </div>
   );
 }
