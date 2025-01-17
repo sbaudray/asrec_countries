@@ -37,10 +37,20 @@ export const Route = createFileRoute("/")({
 function HomeComponent() {
   const countries = Route.useLoaderData();
 
+  const regions = countries.reduce((acc, value) => {
+    if (acc.has(value.region)) {
+      return acc;
+    }
+
+    return acc.add(value.region);
+  }, new Set<string>());
+
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const [activeCurrencyFilter, setActiveCurrencyFilter] =
     React.useState<CurrencyFilter>("NONE");
+
+  const [regionFilter, setRegionFilter] = React.useState<string>("");
 
   const filteredCountries = countries.filter((country) => {
     let keepItem = true;
@@ -49,6 +59,12 @@ function HomeComponent() {
       if (
         !country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
       ) {
+        keepItem = false;
+      }
+    }
+
+    if (regionFilter !== "") {
+      if (country.region !== regionFilter) {
         keepItem = false;
       }
     }
@@ -98,6 +114,24 @@ function HomeComponent() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.currentTarget.value)}
         />
+      </div>
+      <div>
+        <label htmlFor="regionFilter">Filtrer par région:</label>
+        <select
+          name="regionFilter"
+          id="regionFilter"
+          value={regionFilter}
+          onChange={(e) => setRegionFilter(e.currentTarget.value)}
+        >
+          <option value="">-- Sélectionner une région --</option>
+          {Array.from(regions).map((region) => {
+            return (
+              <option key={region} value={region}>
+                {region}
+              </option>
+            );
+          })}
+        </select>
       </div>
       <div>
         <span id="currencyFilterLabel">Filtrer par monnaie:</span>
