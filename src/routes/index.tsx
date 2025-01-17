@@ -19,6 +19,8 @@ interface Country {
   };
 }
 
+type CurrencyFilter = "EURO" | "DOLLAR" | "POUND" | "NONE";
+
 async function fetchAllCountries(): Promise<Array<Country>> {
   const res = await fetch(
     "https://restcountries.com/v3.1/all?fields=flag,flags,name,translations,capital,region,languages,currencies,demonyms",
@@ -37,6 +39,9 @@ function HomeComponent() {
 
   const [searchTerm, setSearchTerm] = React.useState("");
 
+  const [activeCurrencyFilter, setActiveCurrencyFilter] =
+    React.useState<CurrencyFilter>("NONE");
+
   const filteredCountries = countries.filter((country) => {
     let keepItem = true;
 
@@ -48,20 +53,85 @@ function HomeComponent() {
       }
     }
 
+    if (activeCurrencyFilter === "EURO") {
+      if (
+        !Object.values(country.currencies).some(
+          (currency) => currency.name === "Euro",
+        )
+      ) {
+        keepItem = false;
+      }
+    }
+
+    if (activeCurrencyFilter === "POUND") {
+      if (
+        !Object.values(country.currencies).some(
+          (currency) => currency.name === "British pound",
+        )
+      ) {
+        keepItem = false;
+      }
+    }
+
+    if (activeCurrencyFilter === "DOLLAR") {
+      if (
+        !Object.values(country.currencies).some(
+          (currency) => currency.name === "United States dollar",
+        )
+      ) {
+        keepItem = false;
+      }
+    }
+
     return keepItem;
   });
 
   return (
     <div>
       <h3>ASREC Countries</h3>
-      <label htmlFor="search">Rechercher un pays:</label>
-      <input
-        id="search"
-        name="search"
-        role="search"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.currentTarget.value)}
-      />
+      <div>
+        <label htmlFor="search">Rechercher un pays:</label>
+        <input
+          id="search"
+          name="search"
+          role="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.currentTarget.value)}
+        />
+      </div>
+      <div>
+        <span id="currencyFilterLabel">Filtrer par monnaie:</span>
+        <div role="group" aria-labelledby="currencyFilterLabel">
+          <button
+            aria-current={activeCurrencyFilter === "NONE"}
+            className="secondary"
+            onClick={() => setActiveCurrencyFilter("NONE")}
+          >
+            ALL
+          </button>
+          <button
+            aria-current={activeCurrencyFilter === "EURO"}
+            className="secondary"
+            onClick={() => setActiveCurrencyFilter("EURO")}
+          >
+            €
+          </button>
+          <button
+            aria-current={activeCurrencyFilter === "DOLLAR"}
+            className="secondary"
+            onClick={() => setActiveCurrencyFilter("DOLLAR")}
+          >
+            $
+          </button>
+          <button
+            aria-current={activeCurrencyFilter === "POUND"}
+            className="secondary"
+            onClick={() => setActiveCurrencyFilter("POUND")}
+          >
+            £
+          </button>
+        </div>
+      </div>
       <CountryList countries={filteredCountries} />
     </div>
   );
