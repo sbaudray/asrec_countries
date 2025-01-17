@@ -63,8 +63,15 @@ function HomeComponent() {
     if (searchTerm.trim() !== "") {
       if (
         !country.translations.fra.common
+          .normalize("NFD")
+          .replace(/\p{Diacritic}/gu, "")
           .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+          .includes(
+            searchTerm
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/\p{Diacritic}/gu, ""),
+          )
       ) {
         keepItem = false;
       }
